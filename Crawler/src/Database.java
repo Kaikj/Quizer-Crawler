@@ -25,7 +25,7 @@ public class Database {
         MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setUser(config.getProperty("user"));
         dataSource.setPassword(config.getProperty("password"));
-        dataSource.setServerName(config.getProperty("localhost"));
+        dataSource.setServerName(config.getProperty("serverLocation"));
 
         try {
             connection = dataSource.getConnection();

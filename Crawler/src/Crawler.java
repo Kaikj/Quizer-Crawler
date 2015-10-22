@@ -21,6 +21,7 @@ public class Crawler {
 
     public static void main(String[] args) throws UnknownHostException, IOException {
         Database database = new Database();
+        database.connect();
 
         File f;
         f = connect("www.straitstimes.com", "www.straitstimes.com");
