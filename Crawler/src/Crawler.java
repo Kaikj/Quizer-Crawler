@@ -20,6 +20,8 @@ public class Crawler {
     static String TESTSTRING = "posses";
 
     public static void main(String[] args) throws UnknownHostException, IOException {
+        Database database = new Database();
+
         File f;
         f = connect("www.straitstimes.com", "www.straitstimes.com");
         Document doc = Jsoup.parse(f, null, "");

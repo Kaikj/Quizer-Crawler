@@ -14,10 +14,10 @@ import java.util.Properties;
  * Created by wongherlung on 22/10/15.
  */
 public class Database {
-    Connection connection = null;
-    final String DATABASE_NAME = "Quizer_Crawler";
-    final String STATEMENTS_TABLE = "statements";
-    final String VISITED_URLS_TABLE = "visited_urls";
+    private Connection connection = null;
+    private final String DATABASE_NAME = "Quizer_Crawler";
+    private final String STATEMENTS_TABLE = "statements";
+    private final String VISITED_URLS_TABLE = "visited_urls";
 
     // Connects to the database for you; Quite easy hor.
     public void connect() {
