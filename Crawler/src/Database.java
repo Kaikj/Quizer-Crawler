@@ -14,15 +14,13 @@ import java.util.Properties;
  * Created by wongherlung on 22/10/15.
  */
 public class Database {
-    static Connection connection = null;
-    static final String DATABASE_NAME = "Quizer_Crawler";
-
-    public static void main(String[] args) {
-        connect();
-    }
+    Connection connection = null;
+    final String DATABASE_NAME = "Quizer_Crawler";
+    final String STATEMENTS_TABLE = "statements";
+    final String VISITED_URLS_TABLE = "visited_urls";
 
     // Connects to the database for you; Quite easy hor.
-    public static void connect() {
+    public void connect() {
         Properties config = getConfiguration();
         MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setUser(config.getProperty("user"));
@@ -50,7 +48,15 @@ public class Database {
         }
     }
 
-    private static boolean checkIfDatabaseExists() {
+    public void insertStatement(String statement, String url) {
+        executeSQLUpdate("INSERT INTO " + STATEMENTS_TABLE + " VALUES ('" + statement + "', '" + url + "')");
+    }
+
+    public void insertUrl(String url) {
+        executeSQLUpdate("INSERT INTO " + VISITED_URLS_TABLE + " VALUES ('" + url + "')");
+    }
+
+    private boolean checkIfDatabaseExists() {
         Statement statement = null;
         boolean databaseFound = false;
         try {
@@ -68,7 +74,7 @@ public class Database {
         return databaseFound;
     }
 
-    private static void executeSQLUpdate(String SQLCommand) {
+    private void executeSQLUpdate(String SQLCommand) {
         Statement statement = null;
         try {
             statement = connection.createStatement();
@@ -78,10 +84,23 @@ public class Database {
         }
     }
 
+    private ResultSet executeSQLQuery(String SQLCommand) {
+        Statement statement = null;
+        ResultSet result = null;
+        try {
+            statement = connection.createStatement();
+            result = statement.executeQuery(SQLCommand);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
     // Gets configuration values for connecting to DB
     // config file is found in resources folder
     // Please do not commit config.properties
-    private static Properties getConfiguration() {
+    private Properties getConfiguration() {
         File configFile = new File("resources/config.properties");
         FileReader reader = null;
         try {
@@ -102,14 +121,14 @@ public class Database {
 
     // Table Creation
 
-    private static void createStatementsTable() {
+    private void createStatementsTable() {
         Statement statement = null;
         try {
             statement = connection.createStatement();
 
             // Create the statement table
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS statements (" +
-                    "statements VARCHAR(2048), " +
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + STATEMENTS_TABLE + " (" +
+                    "statement VARCHAR(2048), " +
                     "url VARCHAR(2048))");
 
         } catch (SQLException e) {
@@ -117,13 +136,13 @@ public class Database {
         }
     }
 
-    private static void createVisitedURLsTable() {
+    private void createVisitedURLsTable() {
         Statement statement = null;
         try {
             statement = connection.createStatement();
 
             // Create the statement table
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS visited_urls (" +
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + VISITED_URLS_TABLE + " (" +
                     "url VARCHAR(2048))");
 
         } catch (SQLException e) {
