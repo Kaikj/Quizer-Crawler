@@ -19,8 +19,7 @@ public class Crawler {
     static Socket s;
     static String TESTSTRING = "posses";
 
-    public static void main(String[] args) throws UnknownHostException,
-            IOException {
+    public static void main(String[] args) throws UnknownHostException, IOException {
         File f;
         f = connect("www.straitstimes.com", "www.straitstimes.com");
         Document doc = Jsoup.parse(f, null, "");
@@ -30,16 +29,14 @@ public class Crawler {
         }
     }
 
-    public static File connect(String url, String host)
-            throws UnknownHostException, IOException {
+    public static File connect(String url, String host) throws UnknownHostException, IOException {
         s = new Socket(InetAddress.getByName(url), 80);
         PrintWriter pw = new PrintWriter(s.getOutputStream());
         pw.println("GET / HTTP/1.0");
         pw.println("Host: " + host);
         pw.println("");
         pw.flush();
-        BufferedReader br = new BufferedReader(new InputStreamReader(
-                s.getInputStream()));
+        BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
         String t;
         File f = new File("page.html");
         FileWriter fr = new FileWriter(f);
