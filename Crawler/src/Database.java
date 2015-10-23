@@ -63,7 +63,6 @@ public class Database {
             ResultSet resultSet = executeSQLQuery("SELECT * FROM " + VISITED_URLS_TABLE);
             while (resultSet.next()) {
                 String url = resultSet.getString(1);
-                System.out.println(url);
                 listOfUrls.add(url);
             }
         } catch (SQLException e) {
