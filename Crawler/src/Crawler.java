@@ -9,58 +9,76 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
-
+import java.util.LinkedList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Crawler {
-    static Socket s;
-    static String TESTSTRING = "posses";
-    private static final String STARTING_URL = "www.straitstimes.com";
+	static Socket s;
+	// static String TESTSTRING = "posses";
+	private static final String STARTING_URL = "www.straitstimes.com";
+	private static LinkedList<String> URLtoVisit;
 
-    public static void main(String[] args) throws UnknownHostException, IOException {
-        File f;
-        f = connect(STARTING_URL, STARTING_URL);
-        Document doc = Jsoup.parse(f, null, "");
-        Elements links = doc.select("a[href]");
-        for (Element link : links) {
-            if (!link.attr("abs:href").equals(""))
-                print(" * a: <%s>  (%s)", link.attr("abs:href"), link.text());
-        }
-    }
+	public static void main(String[] args) throws UnknownHostException,
+			IOException {
+		URLtoVisit = new LinkedList<String>();
+		URLtoVisit.add(STARTING_URL);
+		visitURLs();
+	}
 
-    public static File connect(String url, String host) throws UnknownHostException, IOException {
-        s = new Socket(InetAddress.getByName(url), 80);
-        PrintWriter pw = new PrintWriter(s.getOutputStream());
-        pw.println("GET / HTTP/1.0");
-        pw.println("Host: " + host);
-        pw.println("");
-        pw.flush();
-        BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        String t;
-        File f = new File("page.html");
-        FileWriter fr = new FileWriter(f);
-        BufferedWriter bw = new BufferedWriter(fr);
-        while ((t = br.readLine()) != null) {
-            //System.out.println(t);
-            bw.write(t);
-        }
-        bw.close();
-        fr.close();
-        br.close();
-        return f;
-    }
+	private static void visitURLs() throws UnknownHostException, IOException {
+		while (!URLtoVisit.isEmpty()) {
+			String url = URLtoVisit.getFirst();
+			File f;
+			f = connect(url, url);//is hostname always == url?
+			Document doc = Jsoup.parse(f, null, "");
 
-    private static void print(String msg, Object... args) {
-        System.out.println(String.format(msg, args));
-    }
+			// Visit the url, add URLtoVisit, extract sentences from text.
+			String text = doc.text();
 
-    private static String trim(String s, int width) {
-        if (s.length() > width)
-            return s.substring(0, width - 1) + ".";
-        else
-            return s;
-    }
+			Elements links = doc.select("a[href]");
+			for (Element link : links) {
+				String urlLink = link.attr("abs:href");
+				if (!urlLink.equals("")) {
+					URLtoVisit.add(urlLink);
+				}
+			}
+			insertSentencestoDB(text);
+			// insertVisited URL =url;
+			URLtoVisit.removeFirst();
+			visitURLs();
+		}
+	}
+
+	public static void insertSentencestoDB(String text) {
+		// dump all sentences to db?
+		// search for vocab then insert?
+
+	}
+
+	public static File connect(String url, String host)
+			throws UnknownHostException, IOException {
+		s = new Socket(InetAddress.getByName(url), 80);
+		PrintWriter pw = new PrintWriter(s.getOutputStream());
+		pw.println("GET / HTTP/1.0");
+		pw.println("Host: " + host);
+		pw.println("");
+		pw.flush();
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				s.getInputStream()));
+		String t;
+		File f = new File("page.html");
+		FileWriter fr = new FileWriter(f);
+		BufferedWriter bw = new BufferedWriter(fr);
+		while ((t = br.readLine()) != null) {
+			bw.write(t);
+		}
+		bw.close();
+		fr.close();
+		br.close();
+		return f;
+	}
+
 }
