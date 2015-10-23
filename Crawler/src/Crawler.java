@@ -30,6 +30,7 @@ public class Crawler {
 		URLtoVisit.add(STARTING_URL);
 		//URLVisitedBefore = db.getVisitedUrls();
 		visitURLs();
+
 	}
 
 	private static void visitURLs() throws UnknownHostException, IOException {
