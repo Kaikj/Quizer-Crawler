@@ -23,9 +23,11 @@ public class Crawler {
 
 	public static void main(String[] args) throws UnknownHostException,
 			IOException {
+
 		URLtoVisit = new LinkedList<String>();
 		URLtoVisit.add(STARTING_URL);
 		visitURLs();
+
 	}
 
 	private static void visitURLs() throws UnknownHostException, IOException {

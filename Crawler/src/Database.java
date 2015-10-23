@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.Properties;
 
 /**
@@ -20,7 +21,7 @@ public class Database {
     private final String VISITED_URLS_TABLE = "visited_urls";
 
     // Connects to the database for you; Quite easy hor.
-    public Database(){
+    public Database() {
         Properties config = getConfiguration();
         MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setUser(config.getProperty("user"));
@@ -52,8 +53,23 @@ public class Database {
         executeSQLUpdate("INSERT INTO " + STATEMENTS_TABLE + " VALUES ('" + statement + "', '" + url + "')");
     }
 
-    public void insertUrl(String url) {
+    public void inserVisitedtUrl(String url) {
         executeSQLUpdate("INSERT INTO " + VISITED_URLS_TABLE + " VALUES ('" + url + "')");
+    }
+
+    public LinkedList<String> getVisitedUrls() {
+        LinkedList<String> listOfUrls = new LinkedList<String>();
+        try {
+            ResultSet resultSet = executeSQLQuery("SELECT * FROM " + VISITED_URLS_TABLE);
+            while (resultSet.next()) {
+                String url = resultSet.getString(1);
+                System.out.println(url);
+                listOfUrls.add(url);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listOfUrls;
     }
 
     private boolean checkIfDatabaseExists() {
