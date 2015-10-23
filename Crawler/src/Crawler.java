@@ -18,17 +18,16 @@ import org.jsoup.select.Elements;
 public class Crawler {
     static Socket s;
     static String TESTSTRING = "posses";
+    private static final String STARTING_URL = "www.straitstimes.com";
 
     public static void main(String[] args) throws UnknownHostException, IOException {
-        Database database = new Database();
-
         File f;
-        f = connect("www.straitstimes.com", "www.straitstimes.com");
+        f = connect(STARTING_URL, STARTING_URL);
         Document doc = Jsoup.parse(f, null, "");
         Elements links = doc.select("a[href]");
         for (Element link : links) {
             if (!link.attr("abs:href").equals(""))
-                print(" * a: <%s>  (%s)", link.attr("abs:href"), trim(link.text(), 35));
+                print(" * a: <%s>  (%s)", link.attr("abs:href"), link.text());
         }
     }
 
