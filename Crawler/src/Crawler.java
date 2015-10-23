@@ -17,14 +17,18 @@ import org.jsoup.select.Elements;
 
 public class Crawler {
 	static Socket s;
+	static Database db;
 	// static String TESTSTRING = "posses";
 	private static final String STARTING_URL = "www.straitstimes.com";
 	private static LinkedList<String> URLtoVisit;
+	private static LinkedList<String> URLVisitedBefore;
 
 	public static void main(String[] args) throws UnknownHostException,
 			IOException {
+		db = new Database();
 		URLtoVisit = new LinkedList<String>();
 		URLtoVisit.add(STARTING_URL);
+		//URLVisitedBefore = db.getVisitedUrls();
 		visitURLs();
 	}
 
@@ -42,12 +46,15 @@ public class Crawler {
 			for (Element link : links) {
 				String urlLink = link.attr("abs:href");
 				if (!urlLink.equals("")) {
-					URLtoVisit.add(urlLink);
+					if(!URLVisitedBefore.contains((urlLink))){
+							URLtoVisit.add(urlLink);
+							db.insertUrl(urlLink); //update the db of newly visited url.
+					}
 				}
 			}
 			insertSentencestoDB(text);
-			// insertVisited URL =url;
 			URLtoVisit.removeFirst();
+			f.delete();
 			visitURLs();
 		}
 	}
