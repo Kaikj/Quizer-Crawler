@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import org.jsoup.Jsoup;
@@ -27,7 +26,7 @@ public class Crawler {
 		db = new Database();
 		URLtoVisit = new LinkedList<String>();
 		URLtoVisit.add(STARTING_URL);
-		//URLVisitedBefore = db.getVisitedUrls();
+		URLVisitedBefore = db.getVisitedUrls();
 		visitURLs();
 
 	}
@@ -36,7 +35,7 @@ public class Crawler {
 		while (!URLtoVisit.isEmpty()) {
 			String url = URLtoVisit.getFirst();
 			File f;
-			f = connect(url, url);//is hostname always == url?
+			f = connect(url);
 			Document doc = Jsoup.parse(f, null, "");
 
 			// Visit the url, add URLtoVisit, extract sentences from text.
@@ -48,7 +47,7 @@ public class Crawler {
 				if (!urlLink.equals("")) {
 					if(!URLVisitedBefore.contains((urlLink))){
 							URLtoVisit.add(urlLink);
-							db.insertUrl(urlLink); //update the db of newly visited url.
+							db.inserVisitedtUrl(urlLink); //update the db of newly visited url.
 					}
 				}
 			}
@@ -58,16 +57,17 @@ public class Crawler {
 			visitURLs();
 		}
 	}
-
+	
 	public static void insertSentencestoDB(String text) {
 		// dump all sentences to db?
 		// search for vocab then insert?
 
 	}
 
-	public static File connect(String url, String host)
+	public static File connect(String url)
 			throws UnknownHostException, IOException {
 		s = new Socket(InetAddress.getByName(url), 80);
+		String host = s.getInetAddress().getHostName().toString();
 		PrintWriter pw = new PrintWriter(s.getOutputStream());
 		pw.println("GET / HTTP/1.0");
 		pw.println("Host: " + host);
