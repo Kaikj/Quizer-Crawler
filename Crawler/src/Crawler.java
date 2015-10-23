@@ -20,7 +20,7 @@ public class Crawler {
 	private static final String STARTING_URL = "www.straitstimes.com";
 	private static LinkedList<String> URLtoVisit;
 	private static LinkedList<String> URLVisitedBefore;
-
+	
 	public static void main(String[] args) throws UnknownHostException,
 			IOException {
 		db = new Database();
@@ -28,7 +28,6 @@ public class Crawler {
 		URLtoVisit.add(STARTING_URL);
 		URLVisitedBefore = db.getVisitedUrls();
 		visitURLs();
-
 	}
 
 	private static void visitURLs() throws UnknownHostException, IOException {
@@ -40,28 +39,29 @@ public class Crawler {
 
 			// Visit the url, add URLtoVisit, extract sentences from text.
 			String text = doc.text();
-
-			Elements links = doc.select("a[href]");
+			
+			//get links
+			Elements links = doc.select("a");
 			for (Element link : links) {
 				String urlLink = link.attr("abs:href");
 				if (!urlLink.equals("")) {
 					if(!URLVisitedBefore.contains((urlLink))){
 							URLtoVisit.add(urlLink);
-							db.inserVisitedtUrl(urlLink); //update the db of newly visited url.
+							
 					}
 				}
 			}
-			insertSentencestoDB(text);
+			insertSentencestoDB(text,URLtoVisit.getFirst());
+			db.insertVisitedtUrl(URLtoVisit.getFirst()); //update the db of newly visited url.
 			URLtoVisit.removeFirst();
 			f.delete();
 			visitURLs();
 		}
 	}
 	
-	public static void insertSentencestoDB(String text) {
+	public static void insertSentencestoDB(String text,String url) {
 		// dump all sentences to db?
 		// search for vocab then insert?
-
 	}
 
 	public static File connect(String url)

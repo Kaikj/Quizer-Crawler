@@ -54,7 +54,7 @@ public class Database {
 				+ statement + "', '" + url + "')");
 	}
 
-	public void inserVisitedtUrl(String url) {
+	public void insertVisitedtUrl(String url) {
 		executeSQLUpdate("INSERT INTO " + VISITED_URLS_TABLE + " VALUES ('"
 				+ url + "')");
 	}
