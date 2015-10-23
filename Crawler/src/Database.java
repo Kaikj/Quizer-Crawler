@@ -20,7 +20,7 @@ public class Database {
     private final String VISITED_URLS_TABLE = "visited_urls";
 
     // Connects to the database for you; Quite easy hor.
-    public void connect() {
+    public Database(){
         Properties config = getConfiguration();
         MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setUser(config.getProperty("user"));

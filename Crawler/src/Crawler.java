@@ -21,14 +21,14 @@ public class Crawler {
 
     public static void main(String[] args) throws UnknownHostException, IOException {
         Database database = new Database();
-        database.connect();
 
         File f;
         f = connect("www.straitstimes.com", "www.straitstimes.com");
         Document doc = Jsoup.parse(f, null, "");
         Elements links = doc.select("a[href]");
         for (Element link : links) {
-            print(" * a: <%s>  (%s)", link.attr("abs:href"), trim(link.text(), 35));
+            if (!link.attr("abs:href").equals(""))
+                print(" * a: <%s>  (%s)", link.attr("abs:href"), trim(link.text(), 35));
         }
     }
 
