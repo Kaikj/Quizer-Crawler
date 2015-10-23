@@ -18,7 +18,6 @@ import org.jsoup.select.Elements;
 public class Crawler {
 	static Socket s;
 	static Database db;
-	// static String TESTSTRING = "posses";
 	private static final String STARTING_URL = "www.straitstimes.com";
 	private static LinkedList<String> URLtoVisit;
 	private static LinkedList<String> URLVisitedBefore;
