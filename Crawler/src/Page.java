@@ -15,18 +15,19 @@ public class Page {
 	String host;
 	String path;
 	String url;
+	String baseURI;
 	Socket soc;
 	Document doc;
 
-	private static Pattern hostPathPattern = Pattern.compile("[htps]*://([\\w.]*)(/.*)");
+	private static Pattern hostPathPattern = Pattern.compile("([htps]*://)([\\w.]*)(/.*)");
 
 	public Page(String url) throws MalformedURLException {
 		doc = null;
 		Matcher m = hostPathPattern.matcher(url);
 		if (m.matches()) {
-			System.out.println(m.group(1) + " " + m.group(2));
-			host = m.group(1);
-			path = m.group(2);
+			baseURI = m.group(1) + m.group(2);
+			host = m.group(2);
+			path = m.group(3);
 			this.url = url;
 		} else {
 			throw new MalformedURLException(url);
@@ -36,7 +37,6 @@ public class Page {
 	public Document get() throws IOException {
 		connect();
 		sendRequest();
-		doc = Jsoup.parse(soc.getInputStream(), null, host);
 		return doc;
 	}
 
@@ -92,7 +92,7 @@ public class Page {
 	 * @throws IOException
 	 */
 	private void connect() throws IOException {
-		soc = new Socket(InetAddress.getByName(host), 0);
+		soc = new Socket(InetAddress.getByName(host), 80);
 	}
 
 	/**
@@ -101,10 +101,11 @@ public class Page {
 	 */
 	private void sendRequest() throws IOException {
 		PrintWriter pw = new PrintWriter(soc.getOutputStream());
-		pw.println("GET " + path + " HTTP/1.1");
+		pw.println("GET " + path + " HTTP/1.0");
 		pw.println("Host: " + host);
 		pw.println("");
 		pw.flush();
+		doc = Jsoup.parse(soc.getInputStream(), null, baseURI);
 		pw.close();
 	}
 }
