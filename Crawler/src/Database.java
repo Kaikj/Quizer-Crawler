@@ -50,6 +50,7 @@ public class Database {
 	}
 
 	public void insertStatement(String statement, String url) {
+		statement = escapeSingleQuotes(statement);
 		executeSQLUpdate("INSERT INTO " + STATEMENTS_TABLE + " VALUES ('"
 				+ statement + "', '" + url + "')");
 	}
@@ -135,6 +136,17 @@ public class Database {
 		}
 
 		return props;
+	}
+
+	private String escapeSingleQuotes(String statement) {
+		String newStatement = "";
+		for (int i = 0; i < statement.length(); i++) {
+			if (statement.charAt(i) == '\'') {
+				newStatement += "'";
+			}
+			newStatement += statement.charAt(i);
+		}
+		return newStatement;
 	}
 
 	// Table Creation
