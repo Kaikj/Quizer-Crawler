@@ -1,0 +1,9 @@
+# Java template
+*.class
+
+# Intellij config files
+*.iml
+/.idea
+
+# Do not commit config files
+config.properties
