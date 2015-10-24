@@ -55,7 +55,7 @@ public class Database {
 	}
 
 	public void insertVisitedtUrl(String url) {
-		executeSQLUpdate("INSERT INTO " + VISITED_URLS_TABLE + " VALUES ('"
+		executeSQLUpdate("INSERT IGNORE INTO " + VISITED_URLS_TABLE + " VALUES ('"
 				+ url + "')");
 	}
 
@@ -146,8 +146,8 @@ public class Database {
 
 			// Create the statement table
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS "
-					+ STATEMENTS_TABLE + " (" + "statement VARCHAR(2048), "
-					+ "url VARCHAR(2048))");
+					+ STATEMENTS_TABLE + " (" + "statement VARCHAR(1024) NOT NULL, "
+					+ "url VARCHAR(1024) NOT NULL)");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -161,7 +161,8 @@ public class Database {
 
 			// Create the statement table
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS "
-					+ VISITED_URLS_TABLE + " (" + "url VARCHAR(2048))");
+					+ VISITED_URLS_TABLE + " (" + "url VARCHAR(255) NOT NULL," +
+					"PRIMARY KEY (url))");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
