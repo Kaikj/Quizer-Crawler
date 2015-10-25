@@ -1,91 +1,86 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.LinkedList;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 public class Crawler {
-	static Socket s;
-	static Database db;
-	private static final String STARTING_URL = "www.straitstimes.com";
-	private static LinkedList<String> URLtoVisit;
-	private static LinkedList<String> URLVisitedBefore;
-	
-	public static void main(String[] args) throws UnknownHostException,
-			IOException {
+	private Database db;
+	private LinkedList<String> urlToVisit;
+
+	public static void main(String[] args) throws IOException {
+		Crawler c = new Crawler();
+		c.crawl();
+	}
+
+	public Crawler() {
 		db = new Database();
-		URLtoVisit = new LinkedList<String>();
-		URLtoVisit.add(STARTING_URL);
-		URLVisitedBefore = db.getVisitedUrls();
-		visitURLs();
+		urlToVisit = new LinkedList<String>();
+		urlToVisit.addAll(db.getSeedUrls());
 	}
 
-	private static void visitURLs() throws UnknownHostException, IOException {
-		while (!URLtoVisit.isEmpty()) {
-			String url = URLtoVisit.getFirst();
-			File f;
-			f = connect(url);
-			Document doc = Jsoup.parse(f, null, "");
+	public void crawl() {
+		// If there is nothing to crawl, restart from the
+		// seed url. There might be new seeds
+		if (urlToVisit.isEmpty()) {
+			urlToVisit.addAll(db.getSeedUrls());
+		}
 
-			// Visit the url, add URLtoVisit, extract sentences from text.
-			String text = doc.text();
-			
-			//get links
-			Elements links = doc.select("a");
-			for (Element link : links) {
-				String urlLink = link.attr("abs:href");
-				if (!urlLink.equals("")) {
-					if(!URLVisitedBefore.contains((urlLink))){
-							URLtoVisit.add(urlLink);
-							
+		while (!urlToVisit.isEmpty()) {
+			String url = urlToVisit.removeFirst();
+			Page page;
+			try {
+				page = new Page(url);
+				page.get();
+				addToQueue(page.getLinks(), page);
+
+				// We only want real content, not anything
+				// from the front page as there are mostly
+				// only headlines there
+				if (!page.getPath().equals("/")) {
+					LinkedList<String> sentences = page.getSentences();
+					for (String s : sentences) {
+						addSentence(s, url);
 					}
+
+					// We don't want the root page in the list
+					// of visited url either. Then we can visit
+					// them again for new content
+					db.insertVisitedUrl(url);
 				}
+				Thread.sleep(1000);
+			} catch (MalformedURLException e) {
+				// If the url is bad, just skip it
+				// and carry on. A few missing links won't hurt
+				// continue;
+			} catch (IOException e) {
+				// Parsing failed. Don't care and move on
+				// continue;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			insertSentencestoDB(text,URLtoVisit.getFirst());
-			db.insertVisitedtUrl(URLtoVisit.getFirst()); //update the db of newly visited url.
-			URLtoVisit.removeFirst();
-			f.delete();
-			visitURLs();
 		}
-	}
-	
-	public static void insertSentencestoDB(String text,String url) {
-		// dump all sentences to db?
-		// search for vocab then insert?
+//		crawl();
 	}
 
-	public static File connect(String url)
-			throws UnknownHostException, IOException {
-		s = new Socket(InetAddress.getByName(url), 80);
-		String host = s.getInetAddress().getHostName().toString();
-		PrintWriter pw = new PrintWriter(s.getOutputStream());
-		pw.println("GET / HTTP/1.0");
-		pw.println("Host: " + host);
-		pw.println("");
-		pw.flush();
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-				s.getInputStream()));
-		String t;
-		File f = new File("page.html");
-		FileWriter fr = new FileWriter(f);
-		BufferedWriter bw = new BufferedWriter(fr);
-		while ((t = br.readLine()) != null) {
-			bw.write(t);
+	private void addSentence(String sentence, String url) {
+		if (!db.checkIfSentenceExist(sentence)) {
+			db.insertSentence(sentence, url);
 		}
-		bw.close();
-		fr.close();
-		br.close();
-		return f;
 	}
 
+	private void addToQueue(LinkedList<String> links, Page page) {
+		for (String link : links) {
+			if (urlToVisit.contains(link)) {
+				// The queue already contains the link
+				// continue;
+			} else if (db.checkIfVisited(link)) {
+				// We have already visited this link
+				// continue;
+			} else if (db.checkIfSeed(page.baseURI)) {
+				// We only want to search within the domain
+				urlToVisit.add(link);
+			} else {
+				// Nothing to do here
+				// continue;
+			}
+		}
+	}
 }

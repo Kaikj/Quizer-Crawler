@@ -55,6 +55,7 @@ public class Database {
 
 	public void insertSentence(String sentence, String url) {
 		sentence = escapeSingleQuotes(sentence);
+		System.out.println(sentence);
 		executeSQLUpdate("INSERT INTO " + SENTENCES_TABLE + " VALUES ('"
 				+ sentence + "', '" + url + "')");
 	}
@@ -104,7 +105,6 @@ public class Database {
 
 	public boolean checkIfSentenceExist(String sentence) {
 		try {
-			System.out.println(sentence);
 			ResultSet resultSet = executeSQLQuery("SELECT * FROM " +
 					SENTENCES_TABLE + " WHERE sentence = ?", sentence);
 			return resultSet.next();
