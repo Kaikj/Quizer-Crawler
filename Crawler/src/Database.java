@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.LinkedList;
 import java.util.Properties;
 
@@ -17,8 +14,13 @@ import java.util.Properties;
 public class Database {
 	private Connection connection = null;
 	private final String DATABASE_NAME = "quizer_crawler";
-	private final String STATEMENTS_TABLE = "statements";
+	private final String SENTENCES_TABLE = "sentences";
 	private final String VISITED_URLS_TABLE = "visited_urls";
+	private final String SEED_URLS_TABLE = "seed_urls";
+
+	private final String[] initialSeed = {
+		"http://www.straitstimes.com/"
+	};
 
 	// Connects to the database for you; Quite easy hor.
 	public Database() {
@@ -41,22 +43,35 @@ public class Database {
 			executeSQLUpdate("USE " + DATABASE_NAME);
 
 			// Creation of tables
-			createStatementsTable();
+			createSentencesTable();
 			createVisitedURLsTable();
+			createSeedURLsTable();
+			insertInitialSeed();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void insertStatement(String statement, String url) {
-		statement = escapeSingleQuotes(statement);
-		executeSQLUpdate("INSERT INTO " + STATEMENTS_TABLE + " VALUES ('"
-				+ statement + "', '" + url + "')");
+	public void insertSentence(String sentence, String url) {
+		sentence = escapeSingleQuotes(sentence);
+		executeSQLUpdate("INSERT INTO " + SENTENCES_TABLE + " VALUES ('"
+				+ sentence + "', '" + url + "')");
 	}
 
-	public void insertVisitedtUrl(String url) {
+	public void insertVisitedUrl(String url) {
 		executeSQLUpdate("INSERT IGNORE INTO " + VISITED_URLS_TABLE + " VALUES ('"
+				+ url + "')");
+	}
+
+	public void insertInitialSeed() {
+		for (String s : initialSeed) {
+			insertSeedURL(s);
+		}
+	}
+
+	public void insertSeedURL(String url) {
+		executeSQLUpdate("INSERT IGNORE INTO " + SEED_URLS_TABLE + " VALUES ('"
 				+ url + "')");
 	}
 
@@ -65,6 +80,57 @@ public class Database {
 		try {
 			ResultSet resultSet = executeSQLQuery("SELECT * FROM "
 					+ VISITED_URLS_TABLE);
+			while (resultSet.next()) {
+				String url = resultSet.getString(1);
+				listOfUrls.add(url);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return listOfUrls;
+	}
+
+	public boolean checkIfVisited(String url) {
+		try {
+			ResultSet resultSet = executeSQLQuery("SELECT * FROM " +
+					VISITED_URLS_TABLE + " WHERE url = '" +
+					url + "'");
+			return resultSet.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public boolean checkIfSentenceExist(String sentence) {
+		try {
+			System.out.println(sentence);
+			ResultSet resultSet = executeSQLQuery("SELECT * FROM " +
+					SENTENCES_TABLE + " WHERE sentence = ?", sentence);
+			return resultSet.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public boolean checkIfSeed(String url) {
+		try {
+			ResultSet resultSet = executeSQLQuery("SELECT * FROM " +
+					SEED_URLS_TABLE + " WHERE url LIKE '" +
+					url + "/'");
+			return resultSet.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public LinkedList<String> getSeedUrls() {
+		LinkedList<String> listOfUrls = new LinkedList<String>();
+		try {
+			ResultSet resultSet = executeSQLQuery("SELECT * FROM "
+					+ SEED_URLS_TABLE);
 			while (resultSet.next()) {
 				String url = resultSet.getString(1);
 				listOfUrls.add(url);
@@ -103,12 +169,17 @@ public class Database {
 		}
 	}
 
-	private ResultSet executeSQLQuery(String SQLCommand) {
-		Statement statement = null;
+	private ResultSet executeSQLQuery(String SQLCommand, String... params) {
+		PreparedStatement statement = null;
 		ResultSet result = null;
 		try {
-			statement = connection.createStatement();
-			result = statement.executeQuery(SQLCommand);
+			statement = connection.prepareStatement(SQLCommand);
+			int i = 1;
+			for (String s : params) {
+				statement.setString(i, s);
+				i++;
+			}
+			result = statement.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -151,14 +222,14 @@ public class Database {
 
 	// Table Creation
 
-	private void createStatementsTable() {
+	private void createSentencesTable() {
 		Statement statement = null;
 		try {
 			statement = connection.createStatement();
 
 			// Create the statement table
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS "
-					+ STATEMENTS_TABLE + " (" + "statement VARCHAR(1024) NOT NULL, "
+					+ SENTENCES_TABLE + " (" + "sentence VARCHAR(1024) NOT NULL, "
 					+ "url VARCHAR(1024) NOT NULL)");
 
 		} catch (SQLException e) {
@@ -176,6 +247,19 @@ public class Database {
 					+ VISITED_URLS_TABLE + " (" + "url VARCHAR(255) NOT NULL," +
 					"PRIMARY KEY (url))");
 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void createSeedURLsTable() {
+		Statement statement = null;
+		try {
+			statement = connection.createStatement();
+
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS "
+					+ SEED_URLS_TABLE + " (" + "url VARCHAR(255) NOT NULL, " +
+					"PRIMARY KEY (url))");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
