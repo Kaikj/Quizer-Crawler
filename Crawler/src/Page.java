@@ -19,7 +19,7 @@ public class Page {
 	Socket soc;
 	Document doc;
 
-	private static Pattern hostPathPattern = Pattern.compile("([htps]*://)([\\w.]*)(/.*)");
+	private static Pattern hostPathPattern = Pattern.compile("([htps]*://)([\\w.]*)(/.*)?");
 
 	public Page(String url) throws MalformedURLException {
 		doc = null;
@@ -27,7 +27,11 @@ public class Page {
 		if (m.matches()) {
 			baseURI = m.group(1) + m.group(2);
 			host = m.group(2);
-			path = m.group(3);
+			if (m.group(3) != null) {
+				path = m.group(3);
+			} else {
+				path = "/";
+			}
 			this.url = url;
 		} else {
 			throw new MalformedURLException(url);
