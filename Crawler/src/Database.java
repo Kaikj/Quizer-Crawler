@@ -57,7 +57,7 @@ public class Database {
 		sentence = escapeSingleQuotes(sentence);
 		System.out.println(sentence);
 		executeSQLUpdate("INSERT INTO " + SENTENCES_TABLE + " VALUES ('"
-				+ sentence + "', '" + url + "')");
+				+ sentence + "', '" + url + "', null)");
 	}
 
 	public void insertVisitedUrl(String url) {
@@ -230,7 +230,7 @@ public class Database {
 			// Create the statement table
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS "
 					+ SENTENCES_TABLE + " (" + "sentence VARCHAR(1024) NOT NULL, "
-					+ "url VARCHAR(1024) NOT NULL)");
+					+ "url VARCHAR(1024) NOT NULL, " + "accept BOOLEAN)");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
