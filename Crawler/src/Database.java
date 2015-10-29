@@ -19,7 +19,13 @@ public class Database {
 	private final String SEED_URLS_TABLE = "seed_urls";
 
 	private final String[] initialSeed = {
-		"http://www.straitstimes.com/"
+		"http://www.straitstimes.com/",
+		"http://http://www.bbc.com/",
+		"http://www.cnn.com/",
+		"http://www.economist.com/",
+		"http://www.huffingtonpost.com/",
+		"http://www.channelnewsasia.com/",
+		"http://www.theguardian.com/"
 	};
 
 	// Connects to the database for you; Quite easy hor.
