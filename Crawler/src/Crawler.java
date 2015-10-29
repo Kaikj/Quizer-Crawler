@@ -37,7 +37,10 @@ public class Crawler {
 				if (!page.getPath().equals("/")) {
 					LinkedList<String> sentences = page.getSentences();
 					for (String s : sentences) {
-						addSentence(s, url);
+						String new_s = s.trim();
+						if (!new_s.isEmpty()) {
+							addSentence(new_s, url);
+						}
 					}
 
 					// We don't want the root page in the list
