@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 public class Crawler {
 	private Database db;
@@ -38,7 +39,9 @@ public class Crawler {
 					LinkedList<String> sentences = page.getSentences();
 					for (String s : sentences) {
 						String new_s = s.trim();
-						if (!new_s.isEmpty()) {
+						StringTokenizer st = new StringTokenizer(new_s, " ", false);
+						// We do not want a sentence that is too short
+						if (!new_s.isEmpty() && (st.countTokens() > 6)) {
 							addSentence(new_s, url);
 						}
 					}
