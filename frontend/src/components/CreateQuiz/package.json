@@ -1,6 +1,0 @@
-{
-  "name": "CreateQuiz",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./CreateQuiz.js"
-}
