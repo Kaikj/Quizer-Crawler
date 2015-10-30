@@ -20,14 +20,10 @@ export default class Header extends React.Component {
       <img className={styles.logo} src={logoURL} height="125" />
 
       <div className={styles.wrap}>
-        <h1 className={styles.title}>YARSK</h1>
+        <h1 className={styles.title}>QUIZER CRAWLER</h1>
 
         <h2 className={styles.tagline}>
-          (<strong>Y</strong>et{' '}
-            <strong>A</strong>nother{' '}
-            <strong>R</strong>eact{' '}
-            <strong>S</strong>tarter{' '}
-            <strong>K</strong>it)
+          Quiz generation made easy
         </h2>
       </div>
     </header>;

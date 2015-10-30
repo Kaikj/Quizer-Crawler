@@ -1,5 +1,7 @@
 import React from 'react';
 import Header from '../Header';
+import Select from 'react-select';
+import $ from 'jquery';
 
 /**
  * Import locally scoped styles using css-loader
@@ -10,16 +12,46 @@ import Header from '../Header';
 import styles from './style';
 
 export default class Application extends React.Component {
-  render() {
-    return <div className={styles.main}>
-      <div className={styles.wrap}>
-        <Header />
+    getSentences() {
+        console.log($('.select-box > input').val().split(','));
+        $.ajax({
+            url: 'http://localhost:8081/api/sentences',
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                data: $('.select-box > input').val().split(',')
+            },
+            success: function(data) {
+                console.log(data);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('http://localhost:8081/api/sentences', status, err.toString());
+            }.bind(this)
+        });
+    }
 
-        <main className={styles.body}>
-          <p>Seems like creating your own React starter kit is a right of passage. So, here's mine.</p>
-          <p>For more information, see the <a href="https://github.com/bradleyboy/yarsk#yarsk">Readme</a>.</p>
-        </main>
-      </div>
-    </div>;
-  }
+    render() {
+        var options = [
+            {value: 'networking', label: 'networking'},
+            {value: 'rocks', label: 'rocks'}
+        ];
+
+        return <div className={styles.main}>
+            <div className={styles.wrap}>
+                <Header />
+
+                <main className={styles.body}>
+                    <h3>Enter in keywords to generate quiz:</h3>
+                    <Select
+                        className="select-box"
+                        name="form-field-name"
+                        options={options}
+                        multi={true}
+                        allowCreate={true}
+                        />
+                    <button onClick={this.getSentences}>Generate!</button>
+                </main>
+            </div>
+        </div>;
+    }
 }
