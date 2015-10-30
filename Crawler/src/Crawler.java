@@ -24,9 +24,14 @@ public class Crawler {
 		}
 	}
 
+	/**
+	 * The main powerhouse of the crawler. Everything
+	 * including any heuristics is here!
+	 */
 	public void crawl() {
 		// Just keep crawling. No end unless system interrupt
 		while (true) {
+			// Roll through the queues in an attempt to be polite
 			for (Map.Entry<String, LinkedList<String>> entry : urlQueue.entrySet()) {
 				String seed = entry.getKey();
 				LinkedList<String> urlToVisit = entry.getValue();
@@ -44,6 +49,8 @@ public class Crawler {
 						}
 					}
 				}
+
+				// Great! The url to crawl!
 				String url = urlToVisit.removeFirst();
 				Page page;
 				try {
@@ -82,12 +89,25 @@ public class Crawler {
 		}
 	}
 
+	/**
+	 * Abstraction of checking for duplicate statements
+	 * @param sentence The sentence to be added
+	 * @param url The url that the sentence came from
+	 */
 	private void addSentence(String sentence, String url) {
 		if (!db.checkIfSentenceExist(sentence)) {
 			db.insertSentence(sentence, url);
 		}
 	}
 
+	/**
+	 * Checks for duplicate links and only adds unique links
+	 * to the crawling queue
+	 * @param links The link that we are adding
+	 * @param page The page that the link came from
+	 * @param queue The associated queue that we are adding
+	 *              the link to
+	 */
 	private void addToQueue(LinkedList<String> links, Page page, LinkedList<String> queue) {
 		for (String link : links) {
 			if ((!queue.contains(link)) &&
