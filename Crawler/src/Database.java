@@ -146,10 +146,9 @@ public class Database {
 	}
 
 	private boolean checkIfDatabaseExists() {
-		Statement statement = null;
 		boolean databaseFound = false;
 		try {
-			statement = connection.createStatement();
+			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery("SHOW DATABASES");
 			while (resultSet.next()) {
 				String database = resultSet.getString(1);
@@ -164,9 +163,8 @@ public class Database {
 	}
 
 	private void executeSQLUpdate(String SQLCommand, String... params) {
-		PreparedStatement statement = null;
 		try {
-			statement = connection.prepareStatement(SQLCommand);
+			PreparedStatement statement = connection.prepareStatement(SQLCommand);
 			int i = 1;
 			for (String s: params) {
 				statement.setString(i, s);
@@ -179,10 +177,9 @@ public class Database {
 	}
 
 	private ResultSet executeSQLQuery(String SQLCommand, String... params) {
-		PreparedStatement statement = null;
 		ResultSet result = null;
 		try {
-			statement = connection.prepareStatement(SQLCommand);
+			PreparedStatement statement = connection.prepareStatement(SQLCommand);
 			int i = 1;
 			for (String s : params) {
 				statement.setString(i, s);
