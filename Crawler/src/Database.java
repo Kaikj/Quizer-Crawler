@@ -165,11 +165,16 @@ public class Database {
 		return databaseFound;
 	}
 
-	private void executeSQLUpdate(String SQLCommand) {
-		Statement statement = null;
+	private void executeSQLUpdate(String SQLCommand, String... params) {
+		PreparedStatement statement = null;
 		try {
-			statement = connection.createStatement();
-			statement.executeUpdate(SQLCommand);
+			statement = connection.prepareStatement(SQLCommand);
+			int i = 0;
+			for (String s: params) {
+				statement.setString(i, s);
+				i++;
+			}
+			statement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
