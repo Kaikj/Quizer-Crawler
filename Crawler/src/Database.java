@@ -62,13 +62,13 @@ public class Database {
 	public void insertSentence(String sentence, String url) {
 		sentence = escapeSingleQuotes(sentence);
 		System.out.println(sentence);
-		executeSQLUpdate("INSERT INTO " + SENTENCES_TABLE + " VALUES ('"
-				+ sentence + "', '" + url + "', null)");
+		executeSQLUpdate("INSERT INTO " + SENTENCES_TABLE +
+				" VALUES (?, ?, null)", sentence , url);
 	}
 
 	public void insertVisitedUrl(String url) {
-		executeSQLUpdate("INSERT IGNORE INTO " + VISITED_URLS_TABLE + " VALUES ('"
-				+ url + "')");
+		executeSQLUpdate("INSERT IGNORE INTO " + VISITED_URLS_TABLE +
+				" VALUES (?)", url);
 	}
 
 	public void insertInitialSeed() {
@@ -78,8 +78,8 @@ public class Database {
 	}
 
 	public void insertSeedURL(String url) {
-		executeSQLUpdate("INSERT IGNORE INTO " + SEED_URLS_TABLE + " VALUES ('"
-				+ url + "')");
+		executeSQLUpdate("INSERT IGNORE INTO " + SEED_URLS_TABLE +
+				" VALUES (?)", url);
 	}
 
 	public LinkedList<String> getVisitedUrls() {
@@ -100,8 +100,7 @@ public class Database {
 	public boolean checkIfVisited(String url) {
 		try {
 			ResultSet resultSet = executeSQLQuery("SELECT * FROM " +
-					VISITED_URLS_TABLE + " WHERE url = '" +
-					url + "'");
+					VISITED_URLS_TABLE + " WHERE url = ?", url);
 			return resultSet.next();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -123,8 +122,7 @@ public class Database {
 	public boolean checkIfSeed(String url) {
 		try {
 			ResultSet resultSet = executeSQLQuery("SELECT * FROM " +
-					SEED_URLS_TABLE + " WHERE url LIKE '" +
-					url + "/'");
+					SEED_URLS_TABLE + " WHERE url LIKE ?", url + "/");
 			return resultSet.next();
 		} catch (SQLException e) {
 			e.printStackTrace();
