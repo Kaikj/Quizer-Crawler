@@ -167,7 +167,7 @@ public class Database {
 		PreparedStatement statement = null;
 		try {
 			statement = connection.prepareStatement(SQLCommand);
-			int i = 0;
+			int i = 1;
 			for (String s: params) {
 				statement.setString(i, s);
 				i++;
