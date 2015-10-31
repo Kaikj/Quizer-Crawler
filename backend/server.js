@@ -123,6 +123,22 @@ function getConditionArray(keywords) {
   return conditionArray;
 }
 
+function getAnswersConditionArray(answers) {
+  var conditionString = '';
+  for (var i in answers) {
+    conditionString += "sentence LIKE ? "
+    if (i < answers.length - 1) {
+      conditionString += 'OR ';
+    }
+  }
+  var conditionArray = [];
+  conditionArray.push(conditionString);
+  for (var i in answers) {
+    conditionArray.push(answers[i]);
+  }
+  return conditionArray;
+}
+
 function removeWord(sentence, keyword) {
   sentence = sentence.replace(keyword, '_________');
   return sentence;
@@ -197,6 +213,34 @@ function selectSentencesKeywordSeperated(sentences, keywords) {
   };
 }
 
+function formatCorrectAnswers(queriedSentences, providedSentences) {
+  var replyObj = [];
+
+  for (var i in providedSentences) {
+    var found = false;
+    var providedSentence = providedSentences[i];
+    for (var j in queriedSentences) {
+      var queriedSentence = queriedSentences[j].dataValues.sentence;
+      if (providedSentence === queriedSentence) {
+        found = true;
+      }
+    }
+    if (found) {
+      replyObj.push({
+        key: i,
+        correct: true
+      });
+    } else {
+      replyObj.push({
+        key: i,
+        correct: false
+      });
+    }
+  }
+
+  return replyObj
+}
+
 // =============================================================================
 // IMPORT ROUTES
 // =============================================================================
@@ -242,6 +286,24 @@ router.route('/quiz').post(function(req, res) {
     res.send("Result not found");
   });
 
+})
+
+router.route('/quiz/check').post(function(req, res) {
+  var answers = req.body.data;
+
+  Sentence.findAll({
+    where: getAnswersConditionArray(answers)
+  }).then(function(sentences) {
+    if (sentences) {
+      var reply = formatCorrectAnswers(sentences, answers);
+
+      res.json(reply);
+    } else {
+      res.send(401, "No sentences found.");
+    }
+  }, function(error) {
+    res.send("Result not found");
+  });
 })
 
 // Middleware to use for all requests
