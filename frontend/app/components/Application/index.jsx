@@ -16,7 +16,8 @@ export default class Application extends React.Component {
         super(props);
         this.state = {
             sentences: '',
-            searchValue: ''
+            searchValue: '',
+            url: ''
         };
         this.getSentences = this.getSentences.bind(this);
     }
@@ -34,7 +35,8 @@ export default class Application extends React.Component {
             success: function(data) {
                 self.setState({
                     sentences: (data) ? data : '',
-                    searchValue: $('.select-box > input').val()
+                    searchValue: $('.select-box > input').val(),
+                    url: 'http://localhost:8080/#/quiz/'+$('.select-box > input').val()
                 });
             }.bind(this),
             error: function(xhr, status, err) {
@@ -59,6 +61,11 @@ export default class Application extends React.Component {
             }
         }
 
+        var url = [];
+        if (this.state.url) {
+            $('.quiz-url').val(this.state.url);
+        }
+
         return <div className={styles.main}>
             <div className={styles.wrap}>
                 <Header />
@@ -69,6 +76,7 @@ export default class Application extends React.Component {
                     <Select
                         className="select-box"
                         name="form-field-name"
+                        placeholder="Press [enter] to choose word of choice..."
                         options={options}
                         multi={true}
                         allowCreate={true}
@@ -77,6 +85,9 @@ export default class Application extends React.Component {
                     <br />
                     <button className="btn btn-default btn-lg" onClick={this.getSentences}>Generate!</button>
                 </main>
+                <div class="input-group">
+                    <input type="text" className="form-control quiz-url" placeholder="URL to quiz will be here after generation..."/>
+                </div>
                 {sentencesArray}
             </div>
         </div>;

@@ -17,6 +17,8 @@ export default class Quiz extends React.Component {
             data: ''
         };
         this.getSentences = this.getSentences.bind(this);
+        this.submitAnswers = this.submitAnswers.bind(this);
+        this.indicateCorrectAndWrongAnswers = this.indicateCorrectAndWrongAnswers.bind(this);
     }
 
     componentDidMount() {
@@ -46,16 +48,42 @@ export default class Quiz extends React.Component {
     }
 
     submitAnswers() {
+        var self = this;
+
         // Get all sentences
         var sentencesLength = $('.sentence-actual').length;
         var data = [];
         for (var i = 0; i < sentencesLength; i++) {
-            data.push({
-                answer: $($('.sentence-actual').get(0)).html(),
-                key: i
-            });
+            data.push($($('.sentence-actual').get(i)).html().replace('&nbsp;',' '));
         }
+
         console.log(data);
+
+        $.ajax({
+            url: 'http://localhost:8081/api/quiz/check',
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                data: data
+            },
+            success: function(data) {
+                console.log(data);
+                self.indicateCorrectAndWrongAnswers(data);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('http://localhost:8081/api/sentences', status, err.toString());
+            }.bind(this)
+        });
+    }
+
+    indicateCorrectAndWrongAnswers(data) {
+        for (var i in data) {
+            if (data[i].correct) {
+                $($('.sentence-actual').get(data[i].key)).parent().addClass('correct-answer');
+            } else {
+                $($('.sentence-actual').get(data[i].key)).parent().addClass('wrong-answer');
+            }
+        }
     }
 
     onDrop(data) {
@@ -87,16 +115,14 @@ export default class Quiz extends React.Component {
         let keywords = this.state.data.keywords;
         if (keywords) {
             for (let i in keywords) {
-                answers.push(<Draggable key={i} type="answer" data={keywords[i]}><li>{keywords[i]}</li></Draggable>);
+                answers.push(<Draggable key={i} type="answer" data={keywords[i]}><div className="quiz-options">{keywords[i]}</div></Draggable>);
             }
         }
 
         return <div className={styles.main}>
             <div className={styles.wrap}>
-                <div>
-                    <ul>
-                        {answers}
-                    </ul>
+                <div className="row">
+                    {answers}
                 </div>
                 <main className={styles.body}>
                     {sentencesArray}
