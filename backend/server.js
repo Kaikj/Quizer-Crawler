@@ -117,7 +117,8 @@ function selectSentences(sentences, keywords) {
     var anySentencesFound = false;
     sentencesObj[keywords[i]] = [];
     for (var j in sentences) {
-      if (sentences[j].dataValues.sentence.indexOf(keywords[i]) !== -1) {
+      if (sentences[j].dataValues.sentence.indexOf(' ' + keywords[i] + ' ') !== -1 || 
+        sentences[j].dataValues.sentence.indexOf(keywords[i] + ' ') === 0) {
         anySentencesFound = true;
         sentencesObj[keywords[i]].push({
           sentence: removeWord(sentences[j].dataValues.sentence, keywords[i]),
