@@ -88,6 +88,25 @@ var Visited = sequelize.define('visited_urls', {
 // =============================================================================
 // HELPERS
 // =============================================================================
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
 function getConditionArray(keywords) {
   var conditionString = '';
   for (var i in keywords) {
@@ -141,6 +160,43 @@ function selectSentences(sentences, keywords) {
   return result;
 }
 
+function selectSentencesKeywordSeperated(sentences, keywords) {
+  var sentencesObj = {};
+  var result = [];
+
+  for (var i in keywords) {
+    var anySentencesFound = false;
+    sentencesObj[keywords[i]] = [];
+    for (var j in sentences) {
+      if (sentences[j].dataValues.sentence.indexOf(' ' + keywords[i] + ' ') !== -1 || 
+        sentences[j].dataValues.sentence.indexOf(keywords[i] + ' ') === 0) {
+        anySentencesFound = true;
+        sentencesObj[keywords[i]].push(
+          removeWord(sentences[j].dataValues.sentence, keywords[i])
+        );
+      }
+    }
+    if (!anySentencesFound) {
+      sentencesObj[keywords[i]].push(
+        ''
+      );
+    }
+  }
+
+  for (var i in sentencesObj) {
+    var randomNum = Math.floor(Math.random() * sentencesObj[i].length);
+    result.push(sentencesObj[i][randomNum]);
+  }
+
+  // Shuffle the array so that answers can't be dtermined from URL
+  result = shuffle(result);
+
+  return {
+    sentences: result,
+    keywords: keywords
+  };
+}
+
 // =============================================================================
 // IMPORT ROUTES
 // =============================================================================
@@ -148,10 +204,7 @@ var router = express.Router();
 
 // on routes that end in /sentences
 // ----------------------------------------------------
-router.route('/sentences')
-
-// create a user (accessed at POST http://localhost:8080/api/sentences)
-.post(function(req, res) {
+router.route('/sentences').post(function(req, res) {
 
   var keywords = req.body.data;
   var conditionArray = getConditionArray(keywords);
@@ -171,6 +224,25 @@ router.route('/sentences')
 
 })
 
+router.route('/quiz').post(function(req, res) {
+
+  var keywords = req.body.data;
+  var conditionArray = getConditionArray(keywords);
+
+  Sentence.findAll({
+    where: conditionArray
+  }).then(function(sentences) {
+    if (sentences) {
+      var result = selectSentencesKeywordSeperated(sentences, keywords);
+      res.json(result);
+    } else {
+      res.send(401, "No sentences found.");
+    }
+  }, function(error) {
+    res.send("Result not found");
+  });
+
+})
 
 // Middleware to use for all requests
 router.use(function(req, res, next) {
