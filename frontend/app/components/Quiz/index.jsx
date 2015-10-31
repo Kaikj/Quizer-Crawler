@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Sentence from '../Sentence';
+import { Draggable, Droppable } from 'react-drag-and-drop';
 
 /**
  * Import locally scoped styles using css-loader
@@ -44,26 +45,63 @@ export default class Quiz extends React.Component {
         });
     }
 
+    submitAnswers() {
+        // Get all sentences
+        var sentencesLength = $('.sentence-actual').length;
+        var data = [];
+        for (var i = 0; i < sentencesLength; i++) {
+            data.push({
+                answer: $($('.sentence-actual').get(0)).html(),
+                key: i
+            });
+        }
+        console.log(data);
+    }
+
+    onDrop(data) {
+        let answer = data.answer;
+        let question = $('.Droppable.over > div > h4');
+        let questionString = question.html();
+        questionString = questionString.replace('_________', answer);
+        question.html(questionString);
+    }
+
     render() {
         var sentencesArray = [];
-        console.log(this.state.data);
         if (this.state.data.sentences) {
             for (var i in this.state.data.sentences) {
                 if (this.state.data.sentences[i]) {
-                    sentencesArray.push(<Sentence
-                        sentence={this.state.data.sentences[i]}
-                        key={i}
-                        />);
+                    sentencesArray.push(
+                        <Droppable
+                            types={['answer']}
+                            onDrop={this.onDrop.bind(this)}
+                            key={i}>
+                            <Sentence sentence={this.state.data.sentences[i]} key={i} />
+                        </Droppable>
+                    );
                 }
+            }
+        }
+
+        let answers = [];
+        let keywords = this.state.data.keywords;
+        if (keywords) {
+            for (let i in keywords) {
+                answers.push(<Draggable key={i} type="answer" data={keywords[i]}><li>{keywords[i]}</li></Draggable>);
             }
         }
 
         return <div className={styles.main}>
             <div className={styles.wrap}>
+                <div>
+                    <ul>
+                        {answers}
+                    </ul>
+                </div>
                 <main className={styles.body}>
                     {sentencesArray}
                 </main>
-                <button className="btn btn-default btn-lg">Submit</button>
+                <button className="btn btn-default btn-lg" onClick={this.submitAnswers}>Submit</button>
             </div>
         </div>;
     }
