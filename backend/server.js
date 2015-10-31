@@ -109,14 +109,22 @@ function selectSentences(sentences, keywords) {
   var result = [];
 
   for (var i in keywords) {
+    var anySentencesFound = false;
     sentencesObj[keywords[i]] = [];
     for (var j in sentences) {
       if (sentences[j].dataValues.sentence.indexOf(keywords[i]) !== -1) {
+        anySentencesFound = true;
         sentencesObj[keywords[i]].push({
           sentence: sentences[j].dataValues.sentence,
           keyword: keywords[i]
         });
       }
+    }
+    if (!anySentencesFound) {
+      sentencesObj[keywords[i]].push({
+        sentence: 'No results',
+        keyword: keywords[i]
+      });
     }
   }
 
