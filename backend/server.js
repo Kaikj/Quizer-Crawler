@@ -104,6 +104,11 @@ function getConditionArray(keywords) {
   return conditionArray;
 }
 
+function removeWord(sentence, keyword) {
+  sentence = sentence.replace(keyword, '_________');
+  return sentence;
+}
+
 function selectSentences(sentences, keywords) {
   var sentencesObj = {};
   var result = [];
@@ -115,7 +120,7 @@ function selectSentences(sentences, keywords) {
       if (sentences[j].dataValues.sentence.indexOf(keywords[i]) !== -1) {
         anySentencesFound = true;
         sentencesObj[keywords[i]].push({
-          sentence: sentences[j].dataValues.sentence,
+          sentence: removeWord(sentences[j].dataValues.sentence, keywords[i]),
           keyword: keywords[i]
         });
       }
