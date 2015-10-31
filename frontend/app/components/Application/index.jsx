@@ -83,11 +83,11 @@ export default class Application extends React.Component {
                         value={this.state.searchValue}
                         />
                     <br />
+                    <div class="input-group">
+                        <input type="text" className="form-control quiz-url" placeholder="URL to quiz will be here after generation..."/>
+                    </div>
                     <button className="btn btn-default btn-lg" onClick={this.getSentences}>Generate!</button>
                 </main>
-                <div class="input-group">
-                    <input type="text" className="form-control quiz-url" placeholder="URL to quiz will be here after generation..."/>
-                </div>
                 {sentencesArray}
             </div>
         </div>;

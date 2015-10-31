@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import Sentence from '../Sentence';
 import { Draggable, Droppable } from 'react-drag-and-drop';
+import Sticky from 'react-sticky';
 
 /**
  * Import locally scoped styles using css-loader
@@ -39,6 +40,10 @@ export default class Quiz extends React.Component {
             success: function(data) {
                 self.setState({
                     data: (data) ? data : ''
+                });
+
+                $('.Droppable').mouseleave(function(e) {
+                    $(e.currentTarget).removeClass('over');
                 });
             }.bind(this),
             error: function(xhr, status, err) {
@@ -86,13 +91,12 @@ export default class Quiz extends React.Component {
         }
     }
 
-    onDrop(data) {
+    onDrop(data, e) {
         let answer = data.answer;
-        let question = $('.Droppable.over > div > h4');
+        let question = $(e.currentTarget);
         let questionString = question.html();
         questionString = questionString.replace('_________', answer);
         question.html(questionString);
-        question.parent().parent().removeClass('over');
     }
 
     render() {
@@ -122,9 +126,9 @@ export default class Quiz extends React.Component {
 
         return <div className={styles.main}>
             <div className={styles.wrap}>
-                <div className="row">
+                <Sticky className="row">
                     {answers}
-                </div>
+                </Sticky>
                 <main className={styles.body}>
                     {sentencesArray}
                 </main>
