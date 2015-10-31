@@ -17,7 +17,6 @@ import logoURL from './images/react-logo.svg';
 export default class Header extends React.Component {
   render() {
     return <header className={styles.main}>
-      <img className={styles.logo} src={logoURL} height="125" />
 
       <div className={styles.wrap}>
         <h1 className={styles.title}>QUIZER CRAWLER</h1>

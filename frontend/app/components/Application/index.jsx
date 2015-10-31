@@ -77,7 +77,7 @@ export default class Application extends React.Component {
                         value={this.state.searchValue}
                         />
                     <br />
-                    <button onClick={this.getSentences}>Generate!</button>
+                    <button className="btn btn-default btn-lg" onClick={this.getSentences}>Generate!</button>
                 </main>
                 {sentencesArray}
             </div>
