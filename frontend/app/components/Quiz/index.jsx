@@ -92,6 +92,7 @@ export default class Quiz extends React.Component {
         let questionString = question.html();
         questionString = questionString.replace('_________', answer);
         question.html(questionString);
+        question.parent().parent().removeClass('over');
     }
 
     render() {
