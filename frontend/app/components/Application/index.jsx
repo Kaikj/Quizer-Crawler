@@ -2,7 +2,6 @@ import React from 'react';
 import Header from '../Header';
 import Sentence from '../Sentence';
 import Select from 'react-select';
-import $ from 'jquery';
 
 /**
  * Import locally scoped styles using css-loader
@@ -50,7 +49,6 @@ export default class Application extends React.Component {
             {value: 'rocks', label: 'rocks'}
         ];
         var sentencesArray = [];
-        console.log(this.state);
         if (this.state.sentences) {
             for (var i in this.state.sentences) {
                 sentencesArray.push(<Sentence
