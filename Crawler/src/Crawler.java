@@ -66,9 +66,16 @@ public class Crawler {
 						for (String s : sentences) {
 							String new_s = s.trim();
 							StringTokenizer st = new StringTokenizer(new_s, " ", false);
-							// We do not want a sentence that is too short
+							// We do not want a sentence that is too short or blacklisted.
 							if (!new_s.isEmpty() && (st.countTokens() > 6)) {
-								addSentence(new_s, url);
+								boolean blacklist = false;
+								while(st.hasMoreTokens()){
+									String word = st.nextToken();
+									blacklist = blacklist || BlackList.isBlacklisted(word);
+								}
+								if(!blacklist){
+									addSentence(new_s, url);
+								}
 							}
 						}
 
