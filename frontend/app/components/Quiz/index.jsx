@@ -97,6 +97,10 @@ export default class Quiz extends React.Component {
         question.html(questionString);
     }
 
+    refresh() {
+        location.reload();
+    }
+
     render() {
         var sentencesArray = [];
         if (this.state.data.sentences) {
@@ -130,7 +134,10 @@ export default class Quiz extends React.Component {
                 <main className={styles.body}>
                     {sentencesArray}
                 </main>
-                <button className="btn btn-default btn-lg" onClick={this.submitAnswers}>Submit</button>
+                <div className="button-container">
+                    <button className="btn btn-default btn-lg" onClick={this.refresh}>Retry</button>
+                    <button className="btn btn-default btn-lg" onClick={this.submitAnswers}>Submit</button>
+                </div>
             </div>
         </div>;
     }
