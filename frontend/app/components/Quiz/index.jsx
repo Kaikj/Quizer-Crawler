@@ -83,7 +83,6 @@ export default class Quiz extends React.Component {
             if (data[i].correct) {
                 $($('.sentence-actual').get(data[i].key)).parent().addClass('correct-answer');
             } else {
-                console.log(correctAnswer);
                 $($('.sentence-actual').get(data[i].key)).parent().addClass('wrong-answer');
                 $($('.sentence-actual').get(data[i].key)).parent().find('.sentence-keyword').html(correctAnswer);
             }
