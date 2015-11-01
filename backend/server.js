@@ -134,7 +134,12 @@ function getAnswersConditionArray(answers) {
   var conditionArray = [];
   conditionArray.push(conditionString);
   for (var i in answers) {
-    conditionArray.push(answers[i]);
+    var partialSentenceArray = answers[i].split('_________');
+    if (partialSentenceArray[0].length > partialSentenceArray[1].length) {
+      conditionArray.push(partialSentenceArray[0]+'%');
+    } else {
+      conditionArray.push('%'+partialSentenceArray[1]);
+    }
   }
   return conditionArray;
 }
@@ -213,33 +218,61 @@ function selectSentencesKeywordSeperated(sentences, keywords) {
   };
 }
 
-function formatCorrectAnswers(queriedSentences, providedSentences) {
+function formatCorrectAnswers(queriedSentences, providedSentences, blankSentences) {
   var replyObj = [];
 
   for (var i in providedSentences) {
     var found = false;
+    var correctAnswer = '';
     var providedSentence = providedSentences[i];
+    var posOfKeyword = blankSentences[i].indexOf('_________');
+    var inputAnswer = retrieveWordFromSentence(providedSentence, posOfKeyword);
+
     for (var j in queriedSentences) {
       var queriedSentence = queriedSentences[j].dataValues.sentence;
-      if (providedSentence === queriedSentence) {
+      if (queriedSentence === providedSentence) {
         found = true;
+        correctAnswer = inputAnswer;
+      } else {
+        var tempCorrectAnswer = retrieveWordFromSentence(queriedSentence, posOfKeyword);
+
+        // Choosing which correct original sentence to extract the keyword
+        if (queriedSentence.substring(0, posOfKeyword) === providedSentence.substring(0, posOfKeyword) ) {
+          correctAnswer = retrieveWordFromSentence(queriedSentence, posOfKeyword);
+        }
       }
     }
+
     if (found) {
       replyObj.push({
         key: i,
-        correct: true
+        correct: true,
+        correctKeyword: correctAnswer
       });
     } else {
       replyObj.push({
         key: i,
-        correct: false
+        correct: false,
+        correctKeyword: correctAnswer
       });
     }
   }
 
   return replyObj
 }
+
+function retrieveWordFromSentence(sentence, startPos) {
+  var word = '';
+  for (var i = startPos; i < sentence.length; i++) {
+    if (sentence[i] === ' ') {
+      break;
+    } else {
+      word += sentence[i];
+    }
+  }
+  return word;
+}
+
 
 // =============================================================================
 // IMPORT ROUTES
@@ -289,13 +322,14 @@ router.route('/quiz').post(function(req, res) {
 })
 
 router.route('/quiz/check').post(function(req, res) {
-  var answers = req.body.data;
+  var answers = req.body.data.sentences;
+  var originalSentences = req.body.data.originalSentences;
 
   Sentence.findAll({
-    where: getAnswersConditionArray(answers)
+    where: getAnswersConditionArray(originalSentences)
   }).then(function(sentences) {
     if (sentences) {
-      var reply = formatCorrectAnswers(sentences, answers);
+      var reply = formatCorrectAnswers(sentences, answers, originalSentences);
 
       res.json(reply);
     } else {

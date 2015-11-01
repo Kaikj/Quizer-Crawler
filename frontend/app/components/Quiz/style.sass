@@ -19,6 +19,15 @@
   .row
     padding: 5px
 
+  .row.sticky
+    background: #ffffff
+    padding-left: 20px
+    padding-right: 20px
+    padding-top: 20px
+    -webkit-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.75)
+    -moz-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.75)
+    box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.75)
+
   .quiz-options
     display: block
     float: left
@@ -28,10 +37,17 @@
     margin-bottom: 10px
     margin-left: 10px
     background: rgba(201, 230, 242, 0.67)
+    cursor: grab
+
+  .button-container
+    text-align: center
 
   button
-    display: block
-    margin: 0 auto
+    margin-left: 10px
+
+  .score-container
+    text-align: center
+    margin-bottom: 20px
 
 :local(.body)
   line-height: 1.4em
@@ -42,8 +58,14 @@
     padding-left: 10px
     padding-right: 10px
 
+  .answered
+    cursor: pointer
+
+  .sentence-container:hover, .Droppable.over
+    background: rgba(225, 221, 227, 0.47)
+
 .correct-answer
-  background: rgba(178, 246, 174, 0.75)
+  background: rgba(178, 246, 174, 0.23)
 
 .wrong-answer
-  background: rgba(255, 11, 11, 0.39)
+  background: rgba(255, 11, 11, 0.08)

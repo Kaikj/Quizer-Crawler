@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import Sentence from '../Sentence';
 import { Draggable, Droppable } from 'react-drag-and-drop';
+import Sticky from 'react-sticky';
 
 /**
  * Import locally scoped styles using css-loader
@@ -52,12 +54,12 @@ export default class Quiz extends React.Component {
 
         // Get all sentences
         var sentencesLength = $('.sentence-actual').length;
-        var data = [];
+        var data = {};
+        data.sentences = [];
         for (var i = 0; i < sentencesLength; i++) {
-            data.push($($('.sentence-actual').get(i)).html().replace('&nbsp;',' '));
+            data.sentences.push($($('.sentence-actual').get(i)).html().replace('&nbsp;',' '));
         }
-
-        console.log(data);
+        data.originalSentences = this.state.data.sentences;
 
         $.ajax({
             url: 'http://localhost:8081/api/quiz/check',
@@ -67,7 +69,6 @@ export default class Quiz extends React.Component {
                 data: data
             },
             success: function(data) {
-                console.log(data);
                 self.indicateCorrectAndWrongAnswers(data);
             }.bind(this),
             error: function(xhr, status, err) {
@@ -77,21 +78,31 @@ export default class Quiz extends React.Component {
     }
 
     indicateCorrectAndWrongAnswers(data) {
+        var numOfCorrect = 0;
         for (var i in data) {
+            var correctAnswer = data[i].correctKeyword;
             if (data[i].correct) {
+                numOfCorrect++;
                 $($('.sentence-actual').get(data[i].key)).parent().addClass('correct-answer');
             } else {
                 $($('.sentence-actual').get(data[i].key)).parent().addClass('wrong-answer');
+                $($('.sentence-actual').get(data[i].key)).parent().find('.sentence-keyword').html(correctAnswer);
             }
         }
+
+        $('.score-container').html('Your score: ' + numOfCorrect + ' out of ' + data.length);
     }
 
-    onDrop(data) {
+    onDrop(data, e) {
         let answer = data.answer;
-        let question = $('.Droppable.over > div > h4');
+        let question = $(e.currentTarget);
         let questionString = question.html();
         questionString = questionString.replace('_________', answer);
         question.html(questionString);
+    }
+
+    refresh() {
+        location.reload();
     }
 
     render() {
@@ -121,13 +132,19 @@ export default class Quiz extends React.Component {
 
         return <div className={styles.main}>
             <div className={styles.wrap}>
-                <div className="row">
+                <Sticky className="row">
                     {answers}
-                </div>
+                </Sticky>
                 <main className={styles.body}>
                     {sentencesArray}
                 </main>
-                <button className="btn btn-default btn-lg" onClick={this.submitAnswers}>Submit</button>
+                <div className="score-container">
+
+                </div>
+                <div className="button-container">
+                    <button className="btn btn-default btn-lg" onClick={this.refresh}>Retry</button>
+                    <button className="btn btn-default btn-lg" onClick={this.submitAnswers}>Submit</button>
+                </div>
             </div>
         </div>;
     }
