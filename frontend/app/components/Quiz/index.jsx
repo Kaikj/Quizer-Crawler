@@ -78,15 +78,19 @@ export default class Quiz extends React.Component {
     }
 
     indicateCorrectAndWrongAnswers(data) {
+        var numOfCorrect = 0;
         for (var i in data) {
             var correctAnswer = data[i].correctKeyword;
             if (data[i].correct) {
+                numOfCorrect++;
                 $($('.sentence-actual').get(data[i].key)).parent().addClass('correct-answer');
             } else {
                 $($('.sentence-actual').get(data[i].key)).parent().addClass('wrong-answer');
                 $($('.sentence-actual').get(data[i].key)).parent().find('.sentence-keyword').html(correctAnswer);
             }
         }
+
+        $('.score-container').html('Your score: ' + numOfCorrect + ' out of ' + data.length);
     }
 
     onDrop(data, e) {
@@ -134,6 +138,9 @@ export default class Quiz extends React.Component {
                 <main className={styles.body}>
                     {sentencesArray}
                 </main>
+                <div className="score-container">
+
+                </div>
                 <div className="button-container">
                     <button className="btn btn-default btn-lg" onClick={this.refresh}>Retry</button>
                     <button className="btn btn-default btn-lg" onClick={this.submitAnswers}>Submit</button>
