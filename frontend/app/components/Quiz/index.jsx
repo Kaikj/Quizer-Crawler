@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import Sentence from '../Sentence';
 import { Draggable, Droppable } from 'react-drag-and-drop';
 import Sticky from 'react-sticky';
@@ -41,10 +42,6 @@ export default class Quiz extends React.Component {
                 self.setState({
                     data: (data) ? data : ''
                 });
-
-                $('.Droppable').mouseleave(function(e) {
-                    $(e.currentTarget).removeClass('over');
-                });
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error('http://localhost:8081/api/sentences', status, err.toString());
@@ -57,12 +54,12 @@ export default class Quiz extends React.Component {
 
         // Get all sentences
         var sentencesLength = $('.sentence-actual').length;
-        var data = [];
+        var data = {};
+        data.sentences = [];
         for (var i = 0; i < sentencesLength; i++) {
-            data.push($($('.sentence-actual').get(i)).html().replace('&nbsp;',' '));
+            data.sentences.push($($('.sentence-actual').get(i)).html().replace('&nbsp;',' '));
         }
-
-        console.log(data);
+        data.originalSentences = this.state.data.sentences;
 
         $.ajax({
             url: 'http://localhost:8081/api/quiz/check',
@@ -72,7 +69,6 @@ export default class Quiz extends React.Component {
                 data: data
             },
             success: function(data) {
-                console.log(data);
                 self.indicateCorrectAndWrongAnswers(data);
             }.bind(this),
             error: function(xhr, status, err) {
@@ -83,10 +79,13 @@ export default class Quiz extends React.Component {
 
     indicateCorrectAndWrongAnswers(data) {
         for (var i in data) {
+            var correctAnswer = data[i].correctKeyword;
             if (data[i].correct) {
                 $($('.sentence-actual').get(data[i].key)).parent().addClass('correct-answer');
             } else {
+                console.log(correctAnswer);
                 $($('.sentence-actual').get(data[i].key)).parent().addClass('wrong-answer');
+                $($('.sentence-actual').get(data[i].key)).parent().find('.sentence-keyword').html(correctAnswer);
             }
         }
     }
