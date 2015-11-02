@@ -145,7 +145,7 @@ function getAnswersConditionArray(answers) {
 }
 
 function removeWord(sentence, keyword) {
-  sentence = sentence.replace(keyword, '_________');
+  sentence = sentence.replace(' ' + keyword + ' ', '_________');
   return sentence;
 }
 
