@@ -26,7 +26,7 @@ export default class Application extends React.Component {
         var self = this;
 
         var apiurl = 'http://localhost:8081';
-        if (window.location.hostname === 'quizecrawler-i.comp.nus.edu.sg') {
+        if (window.location.hostname !== 'localhost') {
             apiurl = 'quizecrawler-i.comp.nus.edu.sg';
         }
 
