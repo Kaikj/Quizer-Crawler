@@ -26,8 +26,10 @@ export default class Application extends React.Component {
         var self = this;
 
         var apiurl = 'http://localhost:8081/';
+        var URL = apiurl;
         if (window.location.hostname !== 'localhost') {
             apiurl = '';
+            URL = 'http://quizecrawler-i.comp.nus.edu.sg/';
         }
 
         // Perform the ajax request to get the questions
@@ -42,7 +44,7 @@ export default class Application extends React.Component {
                 self.setState({
                     sentences: (data) ? data : '',
                     searchValue: $('.select-box > input').val(),
-                    url: apiurl + '/#/quiz/'+$('.select-box > input').val()
+                    url: URL + '#/quiz/'+$('.select-box > input').val()
                 });
             }.bind(this),
             error: function(xhr, status, err) {
