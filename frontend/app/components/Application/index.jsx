@@ -24,9 +24,15 @@ export default class Application extends React.Component {
 
     getSentences() {
         var self = this;
+
+        var apiurl = 'http://localhost:8081';
+        if (window.location.hostname === 'quizecrawler-i.comp.nus.edu.sg') {
+            apiurl = 'quizecrawler-i.comp.nus.edu.sg';
+        }
+
         // Perform the ajax request to get the questions
         $.ajax({
-            url: 'http://localhost:8081/api/sentences',
+            url: apiurl + '/api/sentences',
             dataType: 'json',
             type: 'POST',
             data: {
@@ -36,7 +42,7 @@ export default class Application extends React.Component {
                 self.setState({
                     sentences: (data) ? data : '',
                     searchValue: $('.select-box > input').val(),
-                    url: 'http://localhost:8080/#/quiz/'+$('.select-box > input').val()
+                    url: apiurl + '/#/quiz/'+$('.select-box > input').val()
                 });
             }.bind(this),
             error: function(xhr, status, err) {
