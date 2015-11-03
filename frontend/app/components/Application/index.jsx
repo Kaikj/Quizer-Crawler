@@ -25,14 +25,14 @@ export default class Application extends React.Component {
     getSentences() {
         var self = this;
 
-        var apiurl = 'http://localhost:8081';
+        var apiurl = 'http://localhost:8081/';
         if (window.location.hostname !== 'localhost') {
-            apiurl = 'quizecrawler-i.comp.nus.edu.sg';
+            apiurl = '';
         }
 
         // Perform the ajax request to get the questions
         $.ajax({
-            url: apiurl + '/api/sentences',
+            url: apiurl + 'api/sentences',
             dataType: 'json',
             type: 'POST',
             data: {

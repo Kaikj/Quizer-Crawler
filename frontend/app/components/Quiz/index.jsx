@@ -31,14 +31,14 @@ export default class Quiz extends React.Component {
     getSentences(query) {
         var self = this;
 
-        var apiurl = 'http://localhost:8081';
+        var apiurl = 'http://localhost:8081/';
         if (window.location.hostname === 'quizecrawler-i.comp.nus.edu.sg') {
-            apiurl = 'quizecrawler-i.comp.nus.edu.sg';
+            apiurl = '';
         }
 
         // Perform the ajax request to get the questions
         $.ajax({
-            url: apiurl + '/api/quiz',
+            url: apiurl + 'api/quiz',
             dataType: 'json',
             type: 'POST',
             data: {
@@ -58,9 +58,9 @@ export default class Quiz extends React.Component {
     submitAnswers() {
         var self = this;
 
-        var apiurl = 'http://localhost:8081';
+        var apiurl = 'http://localhost:8081/';
         if (window.location.hostname === 'quizecrawler-i.comp.nus.edu.sg') {
-            apiurl = 'quizecrawler-i.comp.nus.edu.sg';
+            apiurl = '';
         }
 
         // Get all sentences
@@ -73,7 +73,7 @@ export default class Quiz extends React.Component {
         data.originalSentences = this.state.data.sentences;
 
         $.ajax({
-            url: apiurl + '/api/quiz/check',
+            url: apiurl + 'api/quiz/check',
             dataType: 'json',
             type: 'POST',
             data: {
