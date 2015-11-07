@@ -1,9 +1,6 @@
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.concurrent.Callable;
 
 public class Crawler {
 	private Database db;
@@ -114,6 +111,7 @@ public class Crawler {
 					// of visited url either. Then we can visit
 					// them again for new content
 					db.insertVisitedUrl(url);
+					Thread.sleep(2000);
 				}
 			} catch (MalformedURLException e) {
 				// If the url is bad, just skip it
