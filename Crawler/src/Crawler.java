@@ -111,7 +111,11 @@ public class Crawler {
 					// of visited url either. Then we can visit
 					// them again for new content
 					db.insertVisitedUrl(url);
-					Thread.sleep(2000);
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						continue;
+					}
 				}
 			} catch (MalformedURLException e) {
 				// If the url is bad, just skip it
